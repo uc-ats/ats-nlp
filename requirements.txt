@@ -1,0 +1,22 @@
+# API
+fastapi==0.115.0
+uvicorn==0.30.6
+pydantic==2.8.2
+
+# NLP Core
+spacy==3.7.5
+spacy-lookups-data==1.0.5
+
+# Utilities
+phonenumbers==8.13.45
+rapidfuzz==3.9.7
+langdetect==1.0.9
+
+# Semantic similarity (paid-ATS feel)
+sentence-transformers==3.0.1
+torch==2.3.1
+
+# Optional OCR / layout (only if you decide to parse inside python later)
+# pymupdf==1.24.8
+# pytesseract==0.3.13
+# pillow==10.4.0
