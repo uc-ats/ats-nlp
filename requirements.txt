@@ -12,11 +12,8 @@ phonenumbers==8.13.45
 rapidfuzz==3.9.7
 langdetect==1.0.9
 
-# Semantic similarity (paid-ATS feel)
+# Semantic similarity (ATS-like)
 sentence-transformers==3.0.1
 torch==2.3.1
 
-# Optional OCR / layout (only if you decide to parse inside python later)
-# pymupdf==1.24.8
-# pytesseract==0.3.13
-# pillow==10.4.0
+# (Optional) you can add datasets / pandas later if you need analytics

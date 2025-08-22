@@ -17,3 +17,6 @@ microservices
 rest api
 git
 linux
+terraform
+ci/cd
+devops

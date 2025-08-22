@@ -1,4 +1,3 @@
-# models.py
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 
@@ -26,6 +25,10 @@ class Entities(BaseModel):
     organizations: List[str] = []
     dates: List[str] = []
     locations: List[str] = []
+    # Extended via custom NER (optional)
+    certifications: List[str] = []
+    titles: List[str] = []
+    skill_phrases: List[str] = []
 
 class ExtractResponse(BaseModel):
     sections: Sections | Dict[str, Optional[str]]
@@ -43,4 +46,5 @@ class ScoreResponse(BaseModel):
     score: float
     matched_skills: List[str]
     missing_keywords: List[str]
+    suggested_terms: List[str] = []
     details: Dict[str, Any]
