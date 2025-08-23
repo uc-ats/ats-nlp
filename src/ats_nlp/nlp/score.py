@@ -45,7 +45,7 @@ def compute_ats_score(
     resume_skills: List[str],
     jd_text: str,
     required_skills: List[str] | None,
-    semantic: float
+    semantic: float = 0.0
 ) -> Tuple[float, Dict, List[str], List[str]]:
     jd_tokens = set(clean_text(jd_text, remove_stopwords=True, lemmatize=True).split())
     cand = set(s.lower() for s in (resume_skills or []))

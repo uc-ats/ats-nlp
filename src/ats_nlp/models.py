@@ -1,14 +1,9 @@
-from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
+from typing import List, Optional, Dict, Any
 
 class Metadata(BaseModel):
     format: Optional[str] = None
     sizeKb: Optional[float] = None
-
-class ResumePayload(BaseModel):
-    fileName: Optional[str] = None
-    text: str
-    metadata: Optional[Metadata] = None
 
 class Sections(BaseModel):
     education: Optional[str] = None
@@ -25,22 +20,22 @@ class Entities(BaseModel):
     organizations: List[str] = []
     dates: List[str] = []
     locations: List[str] = []
-    # Extended via custom NER (optional)
     certifications: List[str] = []
     titles: List[str] = []
     skill_phrases: List[str] = []
 
-class ExtractResponse(BaseModel):
-    sections: Sections | Dict[str, Optional[str]]
-    entities: Entities
-    normalized_skills: List[str] = []
+class ResumePayload(BaseModel):
+    fileName: Optional[str] = None
+    text: str
+    sections: Optional[Sections] = None
+    metadata: Optional[Metadata] = None
+    entities: Optional[Entities] = None
+    normalized_skills: Optional[List[str]] = None
     language: Optional[str] = "en"
 
 class ScoreRequest(BaseModel):
-    job_description: str
-    resume_text: Optional[str] = None
-    resume_skills: Optional[List[str]] = None
-    required_skills: Optional[List[str]] = None
+    resume: ResumePayload
+    jobDescription: str
 
 class ScoreResponse(BaseModel):
     score: float

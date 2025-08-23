@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ats_nlp.models import ResumePayload, ExtractResponse, ScoreRequest, ScoreResponse
+from ats_nlp.models import ResumePayload, ScoreRequest, ScoreResponse
 from ats_nlp.nlp.preprocess import clean_text, detect_language
 from ats_nlp.nlp.sections import split_sections
 from ats_nlp.nlp.entities import extract_contacts_and_entities, load_custom_if_available
@@ -134,7 +134,7 @@ def docs_redirect():
         status_code=200
     )
 
-@app.post("/nlp/extract", response_model=ExtractResponse)
+@app.post("/nlp/extract", response_model=ResumePayload)
 def extract(payload: ResumePayload):
     if not payload.text:
         raise HTTPException(400, "text is required")
@@ -151,7 +151,10 @@ def extract(payload: ResumePayload):
     if not sections.skills and found_skills:
         sections.skills = ", ".join(found_skills)
 
-    return ExtractResponse(
+    return ResumePayload(
+        fileName=payload.fileName,
+        text=payload.text,
+        metadata=payload.metadata,
         sections=sections,
         entities=entities,
         normalized_skills=found_skills,
@@ -159,29 +162,27 @@ def extract(payload: ResumePayload):
     )
 
 @app.post("/nlp/score", response_model=ScoreResponse)
-def score(req: ScoreRequest):
-    logger.info("📊 Score endpoint called")
-    if not req.job_description:
-        raise HTTPException(400, "job_description required")
+def score_endpoint(req: ScoreRequest):
+    resume = req.resume
+    jd_text = req.jobDescription
 
-    if not SKILLS:
-        raise HTTPException(500, "Skills engine not available")
+    # Now you can access all extracted fields:
+    # resume.text, resume.sections, resume.entities, resume.normalized_skills, etc.
 
-    resume_text = clean_text(req.resume_text or "", remove_stopwords=True, lemmatize=True)
-    jd_text = clean_text(req.job_description, remove_stopwords=True, lemmatize=True)
+    # Example scoring logic (simplified; adapt as needed)
+    resume_skills = resume.normalized_skills or []
+    required_skills = []  # You might want to extract from JD or pass explicitly
+    semantic = 0.0  # Calculate semantic similarity between resume.text and jd_text
 
-    resume_skills = req.resume_skills or SKILLS.extract(resume_text)
-
-    semantic = semantic_match_score(resume_text, jd_text)
+    # Call your scoring function (update as needed to use new fields)
     total, breakdown, missing, suggestions = compute_ats_score(
         resume_skills=resume_skills,
         jd_text=jd_text,
-        required_skills=req.required_skills,
-        semantic=semantic
+        required_skills=required_skills,
+        semantic=semantic,
+        # Optionally, pass more fields for advanced scoring!
+        # entities=resume.entities, sections=resume.sections, etc.
     )
-
-    logger.info("ATS SCORE → Score=%s | Matched=%s | Missing=%s | Suggestions=%s",
-                total, breakdown["matched_skills"], missing, suggestions)
 
     return ScoreResponse(
         score=total,
